@@ -1,0 +1,46 @@
+#lang racket
+
+; TDA Zonas de Trabajo
+; Como: Listas de Listas
+; Representacion: Una estructura la cual tenga internamente todas sus zonas de trabajo
+; Constructores: list, cons
+; Pertenencias: Encontrar archivo
+; Selectores: 
+; Modificadores:
+; Otras operaciones:
+
+; TDA Workspace
+; Como: Lista
+; Representacion: 
+; Constructores: 
+; Pertenencias: 
+; Selectores: 
+; Modificadores:
+; Otras operaciones: Add
+
+; TDA Index
+; Como: Lista
+; Representacion: 
+; Constructores: 
+; Pertenencias: 
+; Selectores: 
+; Modificadores:
+; Otras operaciones: Commit
+
+; TDA Local Repository
+; Como: Lista
+; Representacion: 
+; Constructores:
+; Pertenencias:
+; Selectores: 
+; Modificadores:
+; Otras operaciones: Push
+
+; TDA Remote Repository
+; Como: Lista
+; Representacion: 
+; Constructores: 
+; Pertenencias: 
+; Selectores: 
+; Modificadores:
+; Otras operaciones: Pull
