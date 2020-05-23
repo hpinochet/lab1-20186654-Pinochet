@@ -1,5 +1,7 @@
 #lang racket
 
+;Eliminar Duplicados Pendiente
+
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
 
@@ -45,7 +47,7 @@
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
 (define (add StrCom Zona) (ZonaTrabajo (CopiarWorkspace Zona)
-                                       (add2 StrCom (car Zona))
+                                       (Concatenar (CopiarIndex Zona) (add2 StrCom (car Zona)))
                                        (CopiarLocalRepository Zona)
                                        (CopiarRemoteRepository Zona)
                                        (Concatenar (CopiarRegistros Zona)(list "->add"))))

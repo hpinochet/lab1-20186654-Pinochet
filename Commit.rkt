@@ -8,10 +8,10 @@
  )
 
 (define Index
-  (list "Texto1.c" "Texto2.c" "Texto3.c"))
+  (list "Texto5.c" "Texto6.c" "Texto7.c"))
 
 (define LocalRepository
-  (list ))
+  (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto3.c" "Texto4.c")))
 
 (define RemoteRepository
   (list ))
@@ -45,11 +45,18 @@
 ;----------------------------------------------------------------------------------
 (define (commit StrCom Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        (CopiarIndex Zona)
-                                       (commit2 StrCom (cadr Zona))
+                                       (commit2 StrCom (cadr Zona) (caddr Zona))
                                        (CopiarRemoteRepository Zona)
                                        (Concatenar (CopiarRegistros Zona)(list "->Commit"))))
 
-(define (commit2 StrCom Index) (if (null? Index) "No hay archivos para realizar Commit" (Concatenar (list StrCom) Index)))
+(define (commit2 StrCom Index LocalRepository) (if (null? Index) "No hay archivos para realizar Commit"
+                                   (if (null? LocalRepository) (list (Concatenar (list StrCom) Index))
+                                       (commit3 StrCom Index LocalRepository))))
+
+(define (commit3 StrCom Index LocalRepository) (if (null? LocalRepository) (list (Concatenar (list StrCom) Index))
+                                                   (if (list? LocalRepository) (cons (car LocalRepository) (commit3 StrCom Index (cdr LocalRepository))) null )))
+
+
 ;Despues de esto hay que limpiar index
 
 ;------------------------------------------------------------------------------------
