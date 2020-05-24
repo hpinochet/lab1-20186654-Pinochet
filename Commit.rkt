@@ -8,7 +8,7 @@
  )
 
 (define Index
-  (list "Texto5.c" "Texto6.c" "Texto7.c"))
+  (list "Texto5.c" "Texto6.c"))
 
 (define LocalRepository
   (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto3.c" "Texto4.c")))
@@ -43,18 +43,39 @@
 ;--------------------------------- Commit --------------------------------------------
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
-(define (commit StrCom Zona) (ZonaTrabajo (CopiarWorkspace Zona)
-                                       (CopiarIndex Zona)
+
+; Descripcion: Verifica si hay archivos en Index.
+; Dominio: StrCom (Archivos ingresados "String") Zona ("ListaxLista").
+; Recorrido: String o Accion.
+; Tipo de Recursion: Cola
+(define (commit StrCom Zona) (if (null? (CopiarIndex Zona)) "No hay archivos en Index"
+                                     (commitx StrCom Zona)))
+
+; Descripcion : Ingresa commit a la Zona de trabajo.
+; Dominio : StrCom (Nombre commit "String") y Zona (Zonas de Trabajo "ListaxLista").
+; Recorrido : Zonas de trabajo ("ListaxLista).
+; Tipo de Recursion: Cola
+(define (commitx StrCom Zona) (ZonaTrabajo (CopiarWorkspace Zona)
+                                       null
                                        (commit2 StrCom (cadr Zona) (caddr Zona))
                                        (CopiarRemoteRepository Zona)
                                        (Concatenar (CopiarRegistros Zona)(list "->Commit"))))
 
+; Descripcion : Se ve los casos de Commit (Si existen archivos, Si hay o no Commits hechos).
+; Dominio : StrCom (Nombre commit "String"), Index ("Lista") y LocalRepository("lista").
+; Recorrido : String o Lista.
+; Tipo de Recursion: Cola.
 (define (commit2 StrCom Index LocalRepository) (if (null? Index) "No hay archivos para realizar Commit"
                                    (if (null? LocalRepository) (list (Concatenar (list StrCom) Index))
                                        (commit3 StrCom Index LocalRepository))))
 
+; Descripcion : Se apilan los commits
+; Dominio : StrCom (Nombre commit "String"), Index ("Lista") y LocalRepository("lista").
+; Recorrido : Lista x Lista.
+; Tipo de Recursion: Natural.
 (define (commit3 StrCom Index LocalRepository) (if (null? LocalRepository) (list (Concatenar (list StrCom) Index))
-                                                   (if (list? LocalRepository) (cons (car LocalRepository) (commit3 StrCom Index (cdr LocalRepository))) null )))
+                                                   (if (list? LocalRepository) (cons (car LocalRepository) (commit3 StrCom Index (cdr LocalRepository)))
+                                                       null )))
 
 
 ;Despues de esto hay que limpiar index
@@ -62,3 +83,7 @@
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
+
+;Ej de uso:
+
+; (commit "Commitx" Zona)
