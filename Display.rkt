@@ -11,10 +11,10 @@
   (list "Texto1.c" "Texto2.c" "Texto3.c"))
 
 (define LocalRepository
-  (list "Commit" "Texto1.c" "Texto2.c"))
+  (list (list"Commit" "Texto1.c" "Texto2.c") (list"Commit2" "Texto3.c" "Texto4.c")))
 
 (define RemoteRepository
-  (list "Texto1.c" "Texto2.c" "Texto321.c" (list "Commit" "Texto1.c" "Texto2.c" "Texto321.c")))
+  (list  "Texto3.c" "Texto4.c" "Texto2.c" "texto7.c" (list (list "Commit" "Texto3.c" "Texto4.c") (list "Commit5" "Texto7.c"))))
 
 (define Registros
   (list ))
@@ -37,12 +37,16 @@
 (define (CopiarRegistros ZonaTrabajo) (car (cddddr ZonaTrabajo)))
 
 
-(define (zonas->string ZonaTrabajo)
-        (display (list
-        "Zonas de trabajo:
-        \nWorkspace: " (CopiarWorkspace ZonaTrabajo)
-        "\nIndex: " (CopiarIndex ZonaTrabajo) 
-        "\nLocal Repository: " (CopiarLocalRepository ZonaTrabajo)
-        "\nRemote Repository: " (CopiarRemoteRepository ZonaTrabajo)
-        "\nRegistros: " (CopiarRegistros ZonaTrabajo))))
+(define (zonas->string Zona) (list "Zonas de trabajo:" "\n"
+        "Workspace: " (CopiarWorkspace Zona) "\n"
+        "Index: " (CopiarIndex Zona) "\n"
+        "Local Repository: " (CopiarLocalRepository Zona) "\n"
+        "Remote Repository: " (CopiarRemoteRepository Zona) "\n"
+        "Registros: " (CopiarRegistros Zona) "\n"
+        ))
+
+;Ej de uso:
+
+; (define Zona(ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros))
+; (display (zonas->string Zona))
   
