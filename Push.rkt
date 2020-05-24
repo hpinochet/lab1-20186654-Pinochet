@@ -1,5 +1,7 @@
 #lang racket
 
+; Eliminar repetidos pendiente
+
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
 
@@ -11,7 +13,7 @@
   (list "Texto1.c" "Texto2.c" "Texto3.c"))
 
 (define LocalRepository
-  (list "Commit" "Texto1.c" "Texto2.c"))
+  (list (list "Commit1" "Texto3.c" "Texto4.c") (list "Commit2" "Texto5.c" "Texto6.c") (list "Commit3" "Texto7.c" "Texto8.c")))
 
 (define RemoteRepository
   (list ))
@@ -49,11 +51,14 @@
 (define (push Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        (CopiarIndex Zona)
                                        (CopiarLocalRepository Zona)
-                                       (Concatenar (push2 (cdr(caddr Zona))) (list(CopiarLocalRepository Zona)))
+                                       (Concatenar (push2 (caddr Zona)) (list(CopiarLocalRepository Zona)))
                                        (Concatenar (CopiarRegistros Zona)(list "->Push"))))
 
 (define (push2 LocalRepository) (if (null? LocalRepository) null
-                                    (cons (car LocalRepository) (push2 (cdr LocalRepository)))))
+                                    (Concatenar (push3 (cdar LocalRepository)) (push2 (cdr LocalRepository)))))
+
+(define (push3 CommitAux) (if (null? (cdr CommitAux)) CommitAux
+                              (cons (car CommitAux) (push3 (cdr CommitAux)))))
 
 
 ;------------------------------------------------------------------------------------

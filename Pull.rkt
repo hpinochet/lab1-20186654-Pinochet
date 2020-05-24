@@ -1,10 +1,12 @@
 #lang racket
 
+;Eliminar Duplicados
+
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
 
 (define Workspace
-  (list )
+  (list "Texto9.c" "Texto10.c")
  )
 
 (define Index
@@ -14,7 +16,7 @@
   (list "Commit" "Texto1.c" "Texto2.c"))
 
 (define RemoteRepository
-  (list "Texto1.c" "Texto2.c" "Texto321.c" (list "Commit" "Texto1.c" "Texto2.c" "Texto321.c")))
+  (list "Texto3.c" "Texto4.c" "Texto5.c" "texto7.c" (list (list "Commit" "Texto3.c" "Texto4.c") (list "Commit5" "Texto7.c"))))
 
 (define Registros
   (list ))
@@ -40,19 +42,22 @@
 ;Concatenar
 (define (Concatenar L1 L2) (if (null? L1) L2
      (cons (car L1) (Concatenar (cdr L1) L2))))
+
+;Lista Auxiliar
+(define Listaux (list ))
                            
 ;--------------------------------- Pull -------------------------------------------
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
 
-(define (pull Zona) (ZonaTrabajo (pull2 (cadddr Zona))
-                                       (CopiarIndex Zona)
-                                       (CopiarLocalRepository Zona)
-                                       (CopiarRemoteRepository Zona)
-                                       (Concatenar (CopiarRegistros Zona)(list "->Pull"))))
+(define (pull Zona) (ZonaTrabajo (Concatenar (CopiarWorkspace Zona) (pull2 (cadddr Zona) Listaux))
+                                 (CopiarIndex Zona)
+                                 (CopiarLocalRepository Zona)
+                                 (CopiarRemoteRepository Zona)
+                                 (Concatenar (CopiarRegistros Zona)(list "->Pull"))))
 
-(define (pull2 RemoteRepository) (if (list? (car RemoteRepository)) null 
-                                     (cons (car RemoteRepository) (pull2 (cdr RemoteRepository)))))
+(define (pull2 RemoteRepository Listaux) (if (list? (car RemoteRepository)) Listaux 
+                                     (pull2 (cdr RemoteRepository) (Concatenar Listaux (list (car RemoteRepository))))))
 
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
