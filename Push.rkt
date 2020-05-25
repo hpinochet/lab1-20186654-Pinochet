@@ -11,10 +11,10 @@
   (list "Texto1.c" "Texto2.c" "Texto3.c"))
 
 (define LocalRepository
-  (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto2.c" "Texto4.c")))
+  (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto2.c" "Texto4.c") (list "Commit2" "Texto2.c" "Texto4.c")))
 
 (define RemoteRepository
-  (list "Texto10.c" "Texto11.c" "Texto12.c" "Texto13.c" (list (list "Commit10" "Texto3.c" "Texto4.c") (list "Commit11" "Texto5.c" "Texto6.c") )))
+  (list "Texto10.c" "Texto11.c" "Texto12.c" "Texto13.c" (list (list "Commit10" "Texto3.c" "Texto4.c") (list "Commit11" "Texto5.c" "Texto6.c") (list "Commit11" "Texto5.c" "Texto6.c"))))
 
 (define Registros
   (list ))
@@ -49,7 +49,7 @@
 ; Dominio: Zona ("ListaxLista").
 ; Recorrido: String o Accion.
 ; Tipo de Recursion: Cola
-(define (push Zona) (if (null? LocalRepository) "Local Repository esta vacio" (if (null? (CopiarRemoteRepository Zona)) (pushXX Zona)
+(define (push Zona) (if (null? (CopiarLocalRepository Zona)) "Local Repository esta vacio" (if (null? (CopiarRemoteRepository Zona)) (pushXX Zona)
                         (pushX Zona))))
 
 ; Descripcion: Agrega los archivos de LocalRepository a RemoteRepository.
@@ -60,7 +60,7 @@
 (define (pushX Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        (CopiarIndex Zona)
                                        null
-                                       (Concatenar (Filtrar (Concatenar (CopiarRemoteArchivos (CopiarRemoteRepository Zona)) (pushcase (caddr Zona)))) (list (Concatenar (CopiarLocalCommits (CopiarLocalRepository Zona)) (CopiarRemoteCommits (CopiarRemoteRepository Zona)))))
+                                       (Concatenar (FiltrarPush (Concatenar (CopiarRemoteArchivos (CopiarRemoteRepository Zona)) (pushcase (caddr Zona)))) (list (Concatenar (CopiarLocalCommits (CopiarLocalRepository Zona)) (CopiarRemoteCommits (CopiarRemoteRepository Zona)))))
                                        (Concatenar (CopiarRegistros Zona)(list "->Push"))))
 
 
@@ -71,7 +71,7 @@
 (define (pushXX Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        (CopiarIndex Zona)
                                        null
-                                       (Concatenar (Filtrar (pushcase (caddr Zona))) (CopiarLocalCommits (CopiarLocalRepository Zona)) )
+                                       (Concatenar (FiltrarPush (pushcase (caddr Zona))) (CopiarLocalCommits (CopiarLocalRepository Zona)) )
                                        (Concatenar (CopiarRegistros Zona)(list "->Push"))))
 
 
@@ -131,19 +131,19 @@
 ; Dominio: Remote (Lista).
 ; Recorrido: Remote Filtrado (Lista).
 ; Tipo de Recursion: Natural.
-(define (Filtrar Remote) (if (null? (cdr Remote)) Remote ;Solo es una palabra no se filtra o es la ultima palabra.
+(define (FiltrarPush Remote) (if (null? (cdr Remote)) Remote ;Solo es una palabra no se filtra o es la ultima palabra.
                             (if (null? Remote) null ; Se termina lista.
-                            (if (Agregar Remote (cdr Remote)) (cons (car Remote) (Filtrar (cdr Remote))) ; Si no se repite se agrega.
-                                (Filtrar (cdr Remote)))))) ; Se recorre la lista.
+                            (if (AgregarPush Remote (cdr Remote)) (cons (car Remote) (FiltrarPush (cdr Remote))) ; Si no se repite se agrega.
+                                (FiltrarPush (cdr Remote)))))) ; Se recorre la lista.
 
 
 ; Descripcion: Indica si la palabra debe ser ingresada o no (Si se repite no)
 ; Dominio: Remote (Lista) RemoteAux (Lista)
 ; Recorrido: Booleano
 ; Tipo de Recursion: Cola
-(define (Agregar Remote RemoteAux) (if (null? RemoteAux) #true ; No se repite la palabra
+(define (AgregarPush Remote RemoteAux) (if (null? RemoteAux) #true ; No se repite la palabra
                                      (if (equal? (car Remote) (car RemoteAux)) #false ; Se repite la palabra.
-                                         (Agregar Remote (cdr RemoteAux))))) ; Se recorre la lista
+                                         (AgregarPush Remote (cdr RemoteAux))))) ; Se recorre la lista
 
 
 ;------------------------------------------------------------------------------------
