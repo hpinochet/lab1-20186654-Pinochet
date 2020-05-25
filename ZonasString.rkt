@@ -1,23 +1,6 @@
 #lang racket
 
-(define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
-                      (list Workspace Index LocalRepository RemoteRepository Registros))
-
-(define Workspace
-  (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c")
- )
-
-(define Index
-  (list "Texto1.c" "Texto2.c" "Texto3.c"))
-
-(define LocalRepository
-  (list (list"Commit" "Texto1.c" "Texto2.c") (list"Commit2" "Texto3.c" "Texto4.c")))
-
-(define RemoteRepository
-  (list  "Texto3.c" "Texto4.c" "Texto2.c" "texto7.c" (list (list "Commit" "Texto3.c" "Texto4.c") (list "Commit5" "Texto7.c"))))
-
-(define Registros
-  (list ))
+(provide zonas->string)
 
 ; Selectores
 
@@ -37,6 +20,14 @@
 (define (CopiarRegistros ZonaTrabajo) (car (cddddr ZonaTrabajo)))
 
 
+;--------------------------------- Display -------------------------------------------
+;----------------------------------------------------------------------------------
+;----------------------------------------------------------------------------------
+
+;Descripcion: Muestra la Zona de Trabajo.
+;Dominio: Zona de Trabajo (ListaxLista).
+;Recorrido: Print.
+;Tipo de Recursion: Cola.
 (define (zonas->string Zona) (list "Zonas de trabajo:" "\n"
         "Workspace: " (CopiarWorkspace Zona) "\n"
         "Index: " (CopiarIndex Zona) "\n"
@@ -44,6 +35,10 @@
         "Remote Repository: " (CopiarRemoteRepository Zona) "\n"
         "Registros: " (CopiarRegistros Zona) "\n"
         ))
+
+;------------------------------------------------------------------------------
+;----------------------------------------------------------------------------------
+;----------------------------------------------------------------------------------
 
 ;Ej de uso:
 
