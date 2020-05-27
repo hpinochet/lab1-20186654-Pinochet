@@ -1,25 +1,15 @@
 #lang racket
 
-;Eliminar Duplicados Pendiente
+(provide add)
+(provide addX)
+(provide add2)
+(provide EncontrarStrCom1)
+(provide EncontrarStrComB)
+(provide FiltrarAdd)
+(provide AgregarAdd)
 
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
-
-(define Workspace
-  (list "Texto1.c" "Texto4.c" "Texto2.c" "Texto5.c")
- )
-
-(define Index
-  (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto7.c"))
-
-(define LocalRepository
-  (list ))
-
-(define RemoteRepository
-  (list ))
-
-(define Registros
-  (list ))
 
 ; Selectores
 
@@ -39,9 +29,8 @@
 (define (CopiarRegistros ZonaTrabajo) (car (cddddr ZonaTrabajo)))
 
 ;Concatenar
-(define (Concatenar L1 L2) (if (null? L1) L2
-     (cons (car L1) (Concatenar (cdr L1) L2))))
-                           
+(define (Concatenar Lista1 Lista2) (if (null? Lista1) Lista2
+     (cons (car Lista1) (Concatenar (cdr Lista1) Lista2))))
 
 ;--------------------------------- Add --------------------------------------------
 ;----------------------------------------------------------------------------------
@@ -59,7 +48,7 @@
 ; Recorrido: Zona de Trabajo (ListaxLista).
 ; Tipo de Recursion: Cola
 (define (addX StrCom Zona) (ZonaTrabajo (CopiarWorkspace Zona)
-                                       (Filtrar (Concatenar (CopiarIndex Zona) (add2 StrCom (car Zona))))
+                                       (FiltrarAdd (Concatenar (CopiarIndex Zona) (add2 StrCom (car Zona))))
                                        (CopiarLocalRepository Zona)
                                        (CopiarRemoteRepository Zona)
                                        (Concatenar (CopiarRegistros Zona)(list "->add"))))
@@ -97,18 +86,18 @@
 ; Dominio: Ind (Lista).
 ; Recorrido: Ind Filtrado (Lista).
 ; Tipo de Recursion: Natural.
-(define (Filtrar Ind) (if (null? (cdr Ind)) Ind ;Solo es una palabra no se filtra o es la ultima palabra.
+(define (FiltrarAdd Ind) (if (null? (cdr Ind)) Ind ;Solo es una palabra no se filtra o es la ultima palabra.
                             (if (null? Ind) null ; Se termina lista.
-                            (if (Agregar Ind (cdr Ind)) (cons (car Ind) (Filtrar (cdr Ind))) ; Si no se repite se agrega.
-                                (Filtrar (cdr Ind)))))) ; Se recorre la lista.
+                            (if (AgregarAdd Ind (cdr Ind)) (cons (car Ind) (FiltrarAdd (cdr Ind))) ; Si no se repite se agrega.
+                                (FiltrarAdd (cdr Ind)))))) ; Se recorre la lista.
 
 ; Descripcion: Indica si la palabra debe ser ingresada o no (Si se repite no)
 ; Dominio: Ind (Lista) IndAux (Lista)
 ; Recorrido: Booleano
 ; Tipo de Recursion: Cola
-(define (Agregar Ind IndAux) (if (null? IndAux) #true ; No se repite la palabra
+(define (AgregarAdd Ind IndAux) (if (null? IndAux) #true ; No se repite la palabra
                                      (if (equal? (car Ind) (car IndAux)) #false ; Se repite la palabra.
-                                         (Agregar Ind (cdr IndAux))))) ; Se recorre la lista
+                                         (AgregarAdd Ind (cdr IndAux))))) ; Se recorre la lista
 
 
 ;------------------------------------------------------------------------------------
@@ -117,6 +106,7 @@
 
 ;Ej de Usos:
 
+;(define Zona(ZonaTrabajo (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c") (list "Texto1.c" "Texto2.c" "Texto3.c") (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto2.c" "Texto4.c") (list "Commit3" "Texto2.c" "Texto4.c")) (list "Texto10.c" "Texto11.c" "Texto12.c" (list (list "Commit10" "Texto10.c") (list "Commit11" "Texto11.c" "Texto12.c"))) (list )))
 ; (add (list "Texto1.c" "Texto2.c" "Texto7.c") Zona);
-; (add (list "Texto1.c" "Texto2.c") Zona)
+; (add (list "Texto1.c") Zona)
 ; (add null Zona)

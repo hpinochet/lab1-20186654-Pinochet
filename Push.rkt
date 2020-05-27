@@ -1,23 +1,20 @@
 #lang racket
 
+(provide push)
+(provide pushX)
+(provide pushXX)
+(provide pushcase)
+(provide push2)
+(provide push3)
+(provide CopiarRemoteArchivos)
+(provide CopiarRemoteCommits)
+(provide CopiarCommits)
+(provide CopiarLocalCommits)
+(provide FiltrarPush)
+(provide AgregarPush)
+
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
-
-(define Workspace
-  (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c")
- )
-
-(define Index
-  (list "Texto1.c" "Texto2.c" "Texto3.c"))
-
-(define LocalRepository
-  (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto2.c" "Texto4.c") (list "Commit2" "Texto2.c" "Texto4.c")))
-
-(define RemoteRepository
-  (list "Texto10.c" "Texto11.c" "Texto12.c" "Texto13.c" (list (list "Commit10" "Texto3.c" "Texto4.c") (list "Commit11" "Texto5.c" "Texto6.c") (list "Commit11" "Texto5.c" "Texto6.c"))))
-
-(define Registros
-  (list ))
 
 ; Selectores
 
@@ -31,16 +28,15 @@
 (define (CopiarLocalRepository ZonaTrabajo) (caddr ZonaTrabajo))
 
 ; Selector RemoteRepository
-(define (CopiarRemoteRepository ZonaTrabajo)
-  (cadddr ZonaTrabajo))
+(define (CopiarRemoteRepository ZonaTrabajo) (cadddr ZonaTrabajo))
 
 ; Selector Registros
 (define (CopiarRegistros ZonaTrabajo) (car (cddddr ZonaTrabajo)))
 
 ;Concatenar
-(define (Concatenar L1 L2) (if (null? L1) L2
-     (cons (car L1) (Concatenar (cdr L1) L2))))
-                           
+(define (Concatenar Lista1 Lista2) (if (null? Lista1) Lista2
+     (cons (car Lista1) (Concatenar (cdr Lista1) Lista2))))
+
 ;--------------------------------- Push --------------------------------------------
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
@@ -59,8 +55,8 @@
 ; Nota: Esta funcion automaticamente deja los commits recientemente ingresados al principio, para poder asi favorecer el trabajo de la funcion log.
 (define (pushX Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        (CopiarIndex Zona)
-                                       null
-                                       (Concatenar (FiltrarPush (Concatenar (CopiarRemoteArchivos (CopiarRemoteRepository Zona)) (pushcase (caddr Zona)))) (list (Concatenar (CopiarLocalCommits (CopiarLocalRepository Zona)) (CopiarRemoteCommits (CopiarRemoteRepository Zona)))))
+                                       (CopiarLocalRepository Zona)
+                                       (Concatenar (FiltrarPush (Concatenar (CopiarRemoteArchivos (CopiarRemoteRepository Zona)) (pushcase (caddr Zona)))) (list (FiltrarPush(Concatenar (CopiarLocalCommits (CopiarLocalRepository Zona)) (CopiarRemoteCommits (CopiarRemoteRepository Zona))))))
                                        (Concatenar (CopiarRegistros Zona)(list "->Push"))))
 
 
@@ -149,3 +145,10 @@
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
+
+;Ej de Uso:
+
+;(define Zona(ZonaTrabajo (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c") (list "Texto1.c" "Texto2.c" "Texto3.c") (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto2.c" "Texto4.c") (list "Commit3" "Texto2.c" "Texto4.c")) (list "Texto10.c" "Texto11.c" "Texto12.c" (list (list "Commit10" "Texto10.c") (list "Commit11" "Texto11.c" "Texto12.c"))) (list )))
+;(define Zona(ZonaTrabajo (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c") (list "Texto1.c" "Texto2.c" "Texto3.c") (list (list "Modificacion1" "Texto1.c") (list "Modificacion2" "Texto2.c" "Texto4.c")) (list "Texto10.c" "Texto11.c" "Texto12.c" (list (list "Commit10" "Texto10.c") (list "Commit11" "Texto11.c" "Texto12.c"))) (list )))
+;(define Zona(ZonaTrabajo (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c") (list "Texto1.c" "Texto2.c" "Texto3.c") (list (list "Entrega1" "Add.rkt") (list "Entrega2" "Commit.rkt" "Pull.rkt") (list "Entrega3" "Push.rkt" "Zonas.rkt" "Status.rkt" "Log.rkt")) (list "Texto10.c" "Texto11.c" "Texto12.c" (list (list "Commit10" "Texto10.c") (list "Commit11" "Texto11.c" "Texto12.c"))) (list )))
+;(push Zona)

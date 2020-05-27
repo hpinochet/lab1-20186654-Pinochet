@@ -42,6 +42,5 @@
 
 ;Ej de uso:
 
-; (define Zona(ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros))
-; (display (zonas->string Zona))
-  
+;(display (zonas->string Zona))
+;Solo se puede usar en ZonaDeTrabajo.rkt

@@ -1,23 +1,12 @@
 #lang racket
 
+(provide commit)
+(provide commitx)
+(provide commit2)
+(provide commit3)
+
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
-
-(define Workspace
-  (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c")
- )
-
-(define Index
-  (list "Texto5.c" "Texto6.c"))
-
-(define LocalRepository
-  (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto3.c" "Texto4.c")))
-
-(define RemoteRepository
-  (list ))
-
-(define Registros
-  (list ))
 
 ; Selectores
 
@@ -37,9 +26,9 @@
 (define (CopiarRegistros ZonaTrabajo) (car (cddddr ZonaTrabajo)))
 
 ;Concatenar
-(define (Concatenar L1 L2) (if (null? L1) L2
-     (cons (car L1) (Concatenar (cdr L1) L2))))
-                           
+(define (Concatenar Lista1 Lista2) (if (null? Lista1) Lista2
+     (cons (car Lista1) (Concatenar (cdr Lista1) Lista2))))
+
 ;--------------------------------- Commit --------------------------------------------
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
@@ -55,9 +44,10 @@
 ; Dominio : StrCom (Nombre commit "String") y Zona (Zonas de Trabajo "ListaxLista").
 ; Recorrido : Zonas de trabajo ("ListaxLista).
 ; Tipo de Recursion: Cola
+; Nota: Se agregan los commits al inicio para facilitar el trabajo de log.
 (define (commitx StrCom Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        null
-                                       (commit2 StrCom (cadr Zona) (caddr Zona))
+                                       (Concatenar (list (Concatenar (list StrCom) (CopiarIndex Zona))) (commit2 StrCom (cadr Zona) (caddr Zona)))
                                        (CopiarRemoteRepository Zona)
                                        (Concatenar (CopiarRegistros Zona)(list "->Commit"))))
 
@@ -66,19 +56,16 @@
 ; Recorrido : String o Lista.
 ; Tipo de Recursion: Cola.
 (define (commit2 StrCom Index LocalRepository) (if (null? Index) "No hay archivos para realizar Commit"
-                                   (if (null? LocalRepository) (list (Concatenar (list StrCom) Index))
+                                   (if (null? LocalRepository) null
                                        (commit3 StrCom Index LocalRepository))))
 
 ; Descripcion : Se apilan los commits
 ; Dominio : StrCom (Nombre commit "String"), Index ("Lista") y LocalRepository("lista").
 ; Recorrido : Lista x Lista.
 ; Tipo de Recursion: Natural.
-(define (commit3 StrCom Index LocalRepository) (if (null? LocalRepository) (list (Concatenar (list StrCom) Index))
+(define (commit3 StrCom Index LocalRepository) (if (null? LocalRepository) null
                                                    (if (list? LocalRepository) (cons (car LocalRepository) (commit3 StrCom Index (cdr LocalRepository)))
                                                        null )))
-
-
-;Despues de esto hay que limpiar index
 
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
@@ -86,4 +73,7 @@
 
 ;Ej de uso:
 
-; (commit "Commitx" Zona)
+;(define Zona(ZonaTrabajo (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c") (list "Texto1.c" "Texto2.c" "Texto3.c") (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto2.c" "Texto4.c") (list "Commit3" "Texto2.c" "Texto4.c")) (list "Texto10.c" "Texto11.c" "Texto12.c" (list (list "Commit10" "Texto10.c") (list "Commit11" "Texto11.c" "Texto12.c"))) (list )))
+;(commit "Commit1" Zona)
+;(commit "Se agregaron los archivos .." Zona)
+;(commit "Se modifico el archivo .." Zona)

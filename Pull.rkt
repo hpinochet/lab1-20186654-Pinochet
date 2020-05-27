@@ -1,25 +1,13 @@
 #lang racket
 
-;Eliminar Duplicados
+(provide pull)
+(provide pullX)
+(provide pull2)
+(provide FiltrarPull)
+(provide AgregarPull)
 
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
-
-(define Workspace
-  (list "Texto2.c" "Texto10.c" "Texto3.c" "Texto5.c")
- )
-
-(define Index
-  (list "Texto1.c" "Texto2.c" "Texto3.c"))
-
-(define LocalRepository
-  (list (list"Commit" "Texto1.c" "Texto2.c")))
-
-(define RemoteRepository
-  (list "Texto3.c" "Texto4.c" "Texto2.c" "texto7.c" (list (list "Commit" "Texto3.c" "Texto4.c") (list "Commit5" "Texto7.c"))))
-
-(define Registros
-  (list ))
 
 ; Selectores
 
@@ -33,15 +21,14 @@
 (define (CopiarLocalRepository ZonaTrabajo) (caddr ZonaTrabajo))
 
 ; Selector RemoteRepository
-(define (CopiarRemoteRepository ZonaTrabajo)
-  (cadddr ZonaTrabajo))
+(define (CopiarRemoteRepository ZonaTrabajo) (cadddr ZonaTrabajo))
 
 ; Selector Registros
 (define (CopiarRegistros ZonaTrabajo) (car (cddddr ZonaTrabajo)))
 
 ;Concatenar
-(define (Concatenar L1 L2) (if (null? L1) L2
-     (cons (car L1) (Concatenar (cdr L1) L2))))
+(define (Concatenar Lista1 Lista2) (if (null? Lista1) Lista2
+     (cons (car Lista1) (Concatenar (cdr Lista1) Lista2))))
 
 ;--------------------------------- Pull -------------------------------------------
 ;----------------------------------------------------------------------------------
@@ -58,7 +45,7 @@
 ; Dominio: Zona de Trabajo ("ListaxLista").
 ; Recorrido: Zona de Trabajo (ListaxLista).
 ; Tipo de Recursion: Cola
-(define (pullX Zona) (ZonaTrabajo (Filtrar (pull2 (CopiarRemoteRepository Zona) (CopiarWorkspace Zona)))
+(define (pullX Zona) (ZonaTrabajo (FiltrarPull (pull2 (CopiarRemoteRepository Zona) (CopiarWorkspace Zona)))
                                  (CopiarIndex Zona)
                                  (CopiarLocalRepository Zona)
                                  (CopiarRemoteRepository Zona)
@@ -75,19 +62,25 @@
 ; Dominio: Works (Lista).
 ; Recorrido: Works Filtrado (Lista).
 ; Tipo de Recursion: Natural.
-(define (Filtrar Works) (if (null? (cdr Works)) Works ;Solo es una palabra no se filtra o es la ultima palabra.
+(define (FiltrarPull Works) (if (null? (cdr Works)) Works ;Solo es una palabra no se filtra o es la ultima palabra.
                             (if (null? Works) null ; Se termina lista.
-                            (if (Agregar Works (cdr Works)) (cons (car Works) (Filtrar (cdr Works))) ; Si no se repite se agrega.
-                                (Filtrar (cdr Works)))))) ; Se recorre la lista.
+                            (if (AgregarPull Works (cdr Works)) (cons (car Works) (FiltrarPull (cdr Works))) ; Si no se repite se agrega.
+                                (FiltrarPull (cdr Works)))))) ; Se recorre la lista.
 
 ; Descripcion: Indica si la palabra debe ser ingresada o no (Si se repite no)
 ; Dominio: Works (Lista) WorksAux (Lista)
 ; Recorrido: Booleano
 ; Tipo de Recursion: Cola
-(define (Agregar Works WorksAux) (if (null? WorksAux) #true ; No se repite la palabra
+(define (AgregarPull Works WorksAux) (if (null? WorksAux) #true ; No se repite la palabra
                                      (if (equal? (car Works) (car WorksAux)) #false ; Se repite la palabra.
-                                         (Agregar Works (cdr WorksAux))))) ; Se recorre la lista
+                                         (AgregarPull Works (cdr WorksAux))))) ; Se recorre la lista
 
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
+
+;Ej de uso:
+;(define Zona(ZonaTrabajo (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c") (list "Texto1.c" "Texto2.c" "Texto3.c") (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto2.c" "Texto4.c") (list "Commit3" "Texto2.c" "Texto4.c")) (list "Texto10.c" "Texto11.c" "Texto12.c" (list (list "Commit10" "Texto10.c") (list "Commit11" "Texto11.c" "Texto12.c"))) (list )))
+;(define Zona(ZonaTrabajo (list "ZonaDeTrabajo.rkt" "Add.rkt" "Commit.rkt") (list ) (list ) (list "Push.rkt" "Pull.rkt"  (list (list "Se agrega Push.rkt" "Push.rkt") (list "Se agrega Pull.rkt" "Pull.rkt"))) (list )))
+;(define Zona(ZonaTrabajo (list "ZonaDeTrabajo.rkt" "Add.rkt" "Commit.rkt" "Push.rkt" "Pull.rkt") (list ) (list ) (list "Texto1.c" "Texto2.c" "Texto3.c" (list (list "Commit1" "Texto1.c") (list "Commit2" "Texto2.c" "Texto3.c"))) (list )))
+;(pull Zona)
