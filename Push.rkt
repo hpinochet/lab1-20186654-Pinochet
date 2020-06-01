@@ -1,39 +1,57 @@
 #lang racket
 
+;Se envian funciones
 (provide push)
-(provide pushX)
-(provide pushXX)
-(provide pushcase)
-(provide push2)
-(provide push3)
-(provide CopiarRemoteArchivos)
-(provide CopiarRemoteCommits)
-(provide CopiarCommits)
-(provide CopiarLocalCommits)
-(provide FiltrarPush)
-(provide AgregarPush)
 
+;Descripcion: Se Define estructura ZonaTrabajo.
+;Dominio: Workspace (Lista), Index (Lista), LocalRepository (ListaxLista), RemoteRepository (ListaxLista) y Registros (Lista).
+;Recorrido: ListaxLista.
+;Tipo de Recursion: Cola.
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
 
 ; Selectores
 
 ; Selector Workspace
+; Descripcion: Copia la informacion de Workspace.
+; Dominio: ZonaTrabajo(ListaxLista).
+; Recorrido: Workspace.
+; Tipo de Recursion: Cola.
 (define (CopiarWorkspace ZonaTrabajo) (car ZonaTrabajo))
 
 ; Selector Index
+; Descripcion: Copia la informacion de Index.
+; Dominio: ZonaTrabajo(ListaxLista).
+; Recorrido: Index
+; Tipo de Recursion: Cola. 
 (define (CopiarIndex ZonaTrabajo) (cadr ZonaTrabajo))
 
 ; Selector LocalRepository
+; Descripcion: Copiar la Informacion de Local Repository,
+; Dominio: ZonaTrabajo(ListaxLista)
+; Recorrido: Local Repository.
+; Tipo de Recursion: Cola.
 (define (CopiarLocalRepository ZonaTrabajo) (caddr ZonaTrabajo))
 
 ; Selector RemoteRepository
+; Descripcion: Copiar la Informacion de Remote Reposiotry.
+; Dominio: ZonaTrabajo(ListaxLista).
+; Recorrido: Remote Repository.
+; Tipo de Recursion: Cola.
 (define (CopiarRemoteRepository ZonaTrabajo) (cadddr ZonaTrabajo))
 
 ; Selector Registros
+; Descripcion: Copiar la Informacion de Registros.
+; Dominio: ZonaTrabajo(ListaxLista).
+; Recorrido: Registros.
+; Tipo de Recursion: Cola.
 (define (CopiarRegistros ZonaTrabajo) (car (cddddr ZonaTrabajo)))
 
-;Concatenar
+; Concatenar
+; Descripcion: Conacatena dos listas.
+; Dominio: Dos Listas.
+; Recorrido: Una Lista.
+; Tipo de Recursion: Natural. 
 (define (Concatenar Lista1 Lista2) (if (null? Lista1) Lista2
      (cons (car Lista1) (Concatenar (cdr Lista1) Lista2))))
 
@@ -41,18 +59,18 @@
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
 
+; Funcion Constructor.
 ; Descripcion: Verifica si hay archivos en Local Repository.
 ; Dominio: Zona ("ListaxLista").
 ; Recorrido: String o Accion.
-; Tipo de Recursion: Cola
+; Tipo de Recursion: Cola.
 (define (push Zona) (if (null? (CopiarLocalRepository Zona)) "Local Repository esta vacio" (if (null? (CopiarRemoteRepository Zona)) (pushXX Zona)
                         (pushX Zona))))
 
 ; Descripcion: Agrega los archivos de LocalRepository a RemoteRepository.
 ; Dominio: Zona de Trabajo ("ListaxLista").
 ; Recorrido: Zona de Trabajo (ListaxLista).
-; Tipo de Recursion: Cola
-; Nota: Esta funcion automaticamente deja los commits recientemente ingresados al principio, para poder asi favorecer el trabajo de la funcion log.
+; Tipo de Recursion: Cola.
 (define (pushX Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        (CopiarIndex Zona)
                                        (CopiarLocalRepository Zona)
@@ -66,8 +84,8 @@
 ; Tipo de Recursion: Cola.
 (define (pushXX Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        (CopiarIndex Zona)
-                                       null
-                                       (Concatenar (FiltrarPush (pushcase (caddr Zona))) (CopiarLocalCommits (CopiarLocalRepository Zona)) )
+                                       (CopiarLocalRepository Zona)
+                                       (Concatenar (FiltrarPush (pushcase (caddr Zona))) (list(CopiarLocalCommits (CopiarLocalRepository Zona))))
                                        (Concatenar (CopiarRegistros Zona)(list "->Push"))))
 
 
@@ -78,10 +96,10 @@
 (define (pushcase LocalRepository) (if (null? LocalRepository) (list "Local Repository esta vacio")
                                        (push2 LocalRepository)))
 
-; Descripcion: Funcion que extrae los archivos de los commits
-; Dominio: LocalRepository (Lista)
-; Recorrido: Lista
-; Tipo de Recursion: Natural
+; Descripcion: Funcion que extrae los archivos de los commits.
+; Dominio: LocalRepository (Lista).
+; Recorrido: Lista.
+; Tipo de Recursion: Natural.
 (define (push2 LocalRepository) (if (null? LocalRepository) null ; El Local repository esta vacio
                                     (Concatenar (push3 (cdar LocalRepository)) (push2 (cdr LocalRepository))))) ; Concatena archivos
 
@@ -109,7 +127,7 @@
                                                     (CopiarRemoteCommits (cdr RemoteRepository))))
 
 
-; Descripcion: Una puesta la cabeza de la lista en los commits se guardan.
+; Descripcion: Una vez puesta la cabeza de la lista en los commits se guardan.
 ; Dominio: RemoteRepository (Lista).
 ; Recorrido: Lista de commits (Lista).
 ; Tipo de Recursion: Natural.
@@ -132,11 +150,11 @@
                             (if (AgregarPush Remote (cdr Remote)) (cons (car Remote) (FiltrarPush (cdr Remote))) ; Si no se repite se agrega.
                                 (FiltrarPush (cdr Remote)))))) ; Se recorre la lista.
 
-
-; Descripcion: Indica si la palabra debe ser ingresada o no (Si se repite no)
-; Dominio: Remote (Lista) RemoteAux (Lista)
-; Recorrido: Booleano
-; Tipo de Recursion: Cola
+; Funcion Pertenencia.
+; Descripcion: Indica si la palabra debe ser ingresada o no (Si se repite no).
+; Dominio: Remote (Lista) RemoteAux (Lista).
+; Recorrido: Booleano.
+; Tipo de Recursion: Cola.
 (define (AgregarPush Remote RemoteAux) (if (null? RemoteAux) #true ; No se repite la palabra
                                      (if (equal? (car Remote) (car RemoteAux)) #false ; Se repite la palabra.
                                          (AgregarPush Remote (cdr RemoteAux))))) ; Se recorre la lista

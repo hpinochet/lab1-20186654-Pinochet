@@ -1,31 +1,57 @@
 #lang racket
 
+;Se envian funciones
 (provide commit)
-(provide commitx)
-(provide commit2)
-(provide commit3)
 
+;Descripcion: Se Define estructura ZonaTrabajo.
+;Dominio: Workspace (Lista), Index (Lista), LocalRepository (ListaxLista), RemoteRepository (ListaxLista) y Registros (Lista).
+;Recorrido: ListaxLista.
+;Tipo de Recursion: Cola.
 (define (ZonaTrabajo Workspace Index LocalRepository RemoteRepository Registros)
                       (list Workspace Index LocalRepository RemoteRepository Registros))
 
 ; Selectores
 
 ; Selector Workspace
+; Descripcion: Copia la informacion de Workspace.
+; Dominio: ZonaTrabajo(ListaxLista).
+; Recorrido: Workspace.
+; Tipo de Recursion: Cola.
 (define (CopiarWorkspace ZonaTrabajo) (car ZonaTrabajo))
 
 ; Selector Index
+; Descripcion: Copia la informacion de Index.
+; Dominio: ZonaTrabajo(ListaxLista).
+; Recorrido: Index
+; Tipo de Recursion: Cola. 
 (define (CopiarIndex ZonaTrabajo) (cadr ZonaTrabajo))
 
 ; Selector LocalRepository
+; Descripcion: Copiar la Informacion de Local Repository,
+; Dominio: ZonaTrabajo(ListaxLista)
+; Recorrido: Local Repository.
+; Tipo de Recursion: Cola.
 (define (CopiarLocalRepository ZonaTrabajo) (caddr ZonaTrabajo))
 
 ; Selector RemoteRepository
+; Descripcion: Copiar la Informacion de Remote Reposiotry.
+; Dominio: ZonaTrabajo(ListaxLista).
+; Recorrido: Remote Repository.
+; Tipo de Recursion: Cola.
 (define (CopiarRemoteRepository ZonaTrabajo) (cadddr ZonaTrabajo))
 
 ; Selector Registros
+; Descripcion: Copiar la Informacion de Registros.
+; Dominio: ZonaTrabajo(ListaxLista).
+; Recorrido: Registros.
+; Tipo de Recursion: Cola.
 (define (CopiarRegistros ZonaTrabajo) (car (cddddr ZonaTrabajo)))
 
-;Concatenar
+; Concatenar
+; Descripcion: Conacatena dos listas.
+; Dominio: Dos Listas.
+; Recorrido: Una Lista.
+; Tipo de Recursion: Natural. 
 (define (Concatenar Lista1 Lista2) (if (null? Lista1) Lista2
      (cons (car Lista1) (Concatenar (cdr Lista1) Lista2))))
 
@@ -33,17 +59,18 @@
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
 
+; Funcion Constructor
 ; Descripcion: Verifica si hay archivos en Index.
-; Dominio: StrCom (Archivos ingresados "String") Zona ("ListaxLista").
+; Dominio: StrCom (Nombre Commit "String") Zona ("ListaxLista").
 ; Recorrido: String o Accion.
-; Tipo de Recursion: Cola
+; Tipo de Recursion: Cola.
 (define (commit StrCom Zona) (if (null? (CopiarIndex Zona)) "No hay archivos en Index"
                                      (commitx StrCom Zona)))
 
 ; Descripcion : Ingresa commit a la Zona de trabajo.
 ; Dominio : StrCom (Nombre commit "String") y Zona (Zonas de Trabajo "ListaxLista").
 ; Recorrido : Zonas de trabajo ("ListaxLista).
-; Tipo de Recursion: Cola
+; Tipo de Recursion: Cola.
 ; Nota: Se agregan los commits al inicio para facilitar el trabajo de log.
 (define (commitx StrCom Zona) (ZonaTrabajo (CopiarWorkspace Zona)
                                        null
@@ -59,7 +86,7 @@
                                    (if (null? LocalRepository) null
                                        (commit3 StrCom Index LocalRepository))))
 
-; Descripcion : Se apilan los commits
+; Descripcion : Se apilan los commits.
 ; Dominio : StrCom (Nombre commit "String"), Index ("Lista") y LocalRepository("lista").
 ; Recorrido : Lista x Lista.
 ; Tipo de Recursion: Natural.
@@ -70,10 +97,3 @@
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------------
-
-;Ej de uso:
-
-;(define Zona(ZonaTrabajo (list "Texto1.c" "Texto2.c" "Texto3.c" "Texto4.c") (list "Texto1.c" "Texto2.c" "Texto3.c") (list (list "Commit1" "Texto1.c" "Texto2.c") (list "Commit2" "Texto2.c" "Texto4.c") (list "Commit3" "Texto2.c" "Texto4.c")) (list "Texto10.c" "Texto11.c" "Texto12.c" (list (list "Commit10" "Texto10.c") (list "Commit11" "Texto11.c" "Texto12.c"))) (list )))
-;(commit "Commit1" Zona)
-;(commit "Se agregaron los archivos .." Zona)
-;(commit "Se modifico el archivo .." Zona)

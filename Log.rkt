@@ -1,13 +1,15 @@
 #lang racket
 
+;Se envian funciones
 (provide log)
-(provide logX)
-(provide IdentificarLength)
-(provide MostrarCommits)
 
 ; Selectores
 
 ; Selector LocalRepository
+; Descripcion: Copiar la Informacion de Local Repository,
+; Dominio: ZonaTrabajo(ListaxLista)
+; Recorrido: Local Repository.
+; Tipo de Recursion: Cola.
 (define (CopiarLocalRepository ZonaTrabajo) (caddr ZonaTrabajo))
 
 
@@ -23,7 +25,7 @@
 ;Recorrido: Print o Procedimiento.
 ;Tipo de Recursion: Cola.
 (define (log Zona) (if (null? (CopiarLocalRepository Zona)) "No hay Commits en el RemoteRepository"
-                       (logX Zona)))
+                       (string-append "\nLos commits mas recientes son:\n" (logX Zona) "\n\n")))
 
 ;Descripcion: LLama a una funcion que recibe como parametros el Local Repository y su Largo.
 ;Dominio: Zona de Trabajo (ListaxLista).
@@ -32,29 +34,27 @@
 (define (logX Zona) (IdentificarLength (CopiarLocalRepository Zona) (length (CopiarLocalRepository Zona))))
 
 ;Descripcion: Verifica la cantidad de commits para ver cuantos elementos hay que concatenar
-;Dominio: Commits (Lista x Lista) y Legth (Entero).
+;Dominio: Commits (Lista x Lista) y Length (Entero).
 ;Recorrido: Funcion.
 ;Tipo de Recursion: Cola.
 (define (IdentificarLength Commits Length) (if (<= Length 5) (MostrarCommits Commits Length)
                                               (MostrarCommits Commits 5)))
 
-;Descripcion: Crea una lista con los 5 commits mas recientes.
-;Dominio: Commits (Lista x Lista) y Legth (Entero).
-;Recorrido: Lista.
+;Descripcion: Crea string con los commits mas recientes.
+;Dominio: Commits (Lista x Lista) y Length (Entero).
+;Recorrido: String.
 ;Tipo de Recursion: Natural.
-(define (MostrarCommits Commits Length) (if (null? Commits) null
-                                            (if (= Length 0) null
-                                                (cons (car Commits) (MostrarCommits (cdr Commits) (- Length 1))))))
+(define (MostrarCommits Commits Length) (if (null? Commits) " "
+                                            (if (= Length 0) " "
+                                                (string-append "\n - " (string-append "(" (ArchivosCommit (car Commits))")" (MostrarCommits (cdr Commits) (- Length 1)))))))
+
+; Descripcion: Convierte en string el contenido de los commits.
+; Dominio: Commit (Lista).
+; Recorrido: String.
+; Tipo de Recursion: Natural. 
+(define (ArchivosCommit Commit) (if (null? (cdr Commit)) (car Commit)
+                                                (string-append (car Commit) " " (ArchivosCommit (cdr Commit)))))
 
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
 ;----------------------------------------------------------------------------------
-
-;Ej de uso:
-;(display(log Zona))
-;Solo se puede usar en ZonaDeTrabajo.rkt
-
-
-
-
-
